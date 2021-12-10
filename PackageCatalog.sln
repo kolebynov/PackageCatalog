@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{39D62B75-4C68-450D-8B07-16FB2BAFC40F}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		PackageCatalog.ruleset = PackageCatalog.ruleset
+		editorconfig = editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Api", "PackageCatalog.Api\PackageCatalog.Api.csproj", "{122E92ED-2131-4266-8E71-E19A788651DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{122E92ED-2131-4266-8E71-E19A788651DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{122E92ED-2131-4266-8E71-E19A788651DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{122E92ED-2131-4266-8E71-E19A788651DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{122E92ED-2131-4266-8E71-E19A788651DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
