@@ -18,6 +18,7 @@
     <Rule Id="SA1013" Action="None" />
     <Rule Id="SA1600" Action="None" />
     <Rule Id="SA1512" Action="None" />
+    <Rule Id="SA1516" Action="None" Description="Elements should be separated by blank line" />
     <Rule Id="SA1000" Action="None" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
