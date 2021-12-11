@@ -1,10 +1,11 @@
 ﻿using NuGet.Versioning;
+using PackageCatalog.Core.Objects;
 
 namespace PackageCatalog.Core.Models;
 
 public class PackageVersion
 {
-	public string PackageId { get; }
+	public StringId PackageId { get; }
 
 	public NuGetVersion Version { get; }
 
@@ -14,14 +15,9 @@ public class PackageVersion
 
 	public uint Checksum { get; }
 
-	public PackageVersion(string packageId, NuGetVersion version, IReadOnlyDictionary<string, string>? additionalInfo,
+	public PackageVersion(StringId packageId, NuGetVersion version, IReadOnlyDictionary<string, string>? additionalInfo,
 		uint checksum, long size)
 	{
-		if (string.IsNullOrEmpty(packageId))
-		{
-			throw new ArgumentException("Value cannot be null or empty.", nameof(packageId));
-		}
-
 		if (checksum == 0)
 		{
 			throw new ArgumentException("Checksum cannot be 0.", nameof(checksum));
@@ -32,7 +28,7 @@ public class PackageVersion
 			throw new ArgumentException("Size cannot be 0.", nameof(size));
 		}
 
-		PackageId = packageId;
+		PackageId = packageId ?? throw new ArgumentNullException(nameof(packageId));
 		Version = version ?? throw new ArgumentNullException(nameof(version));
 		AdditionalInfo = additionalInfo;
 		Checksum = checksum;

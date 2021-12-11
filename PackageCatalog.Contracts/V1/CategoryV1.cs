@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PackageCatalog.Api.Dto;
+namespace PackageCatalog.Contracts.V1;
 
-public class PackageDto
+public class CategoryV1
 {
 	public string Id { get; init; } = null!;
 

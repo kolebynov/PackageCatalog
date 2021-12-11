@@ -23,25 +23,28 @@ internal class PackageCatalogService : IPackageCatalogService
 
 	public Task<IReadOnlyCollection<Category>> GetCategories(
 		Pagination? pagination, CancellationToken cancellationToken) =>
-		repositoryFacade.Categories.GetItems(null, pagination, cancellationToken);
+		repositoryFacade.Categories.GetItems(new GetItemsQuery<Category> { Pagination = pagination }, cancellationToken);
 
-	public async Task<Category?> FindCategory(string categoryId, CancellationToken cancellationToken) =>
-		(await repositoryFacade.Categories.GetItems(x => x.Id == categoryId, null, cancellationToken))
+	public async Task<Category?> FindCategory(StringId categoryId, CancellationToken cancellationToken) =>
+		(await repositoryFacade.Categories.GetItems(
+				new GetItemsQuery<Category> { Filter = x => x.Id == categoryId }, cancellationToken))
 			.FirstOrDefault();
 
-	public Task<IReadOnlyCollection<Package>> GetPackages(string? categoryId, Pagination? pagination,
+	public Task<IReadOnlyCollection<Package>> GetPackages(StringId? categoryId, Pagination? pagination,
 		CancellationToken cancellationToken)
 	{
-		Expression<Func<Package, bool>>? predicate = !string.IsNullOrEmpty(categoryId)
+		Expression<Func<Package, bool>>? filter = categoryId != null
 			? x => x.CategoryId == categoryId
 			: null;
-		return repositoryFacade.Packages.GetItems(predicate, pagination, cancellationToken);
+		return repositoryFacade.Packages.GetItems(
+			new GetItemsQuery<Package> { Filter = filter, Pagination = pagination }, cancellationToken);
 	}
 
-	public async Task<IReadOnlyCollection<PackageVersion>> GetPackageVersionsDesc(string packageId, Pagination? pagination,
-		CancellationToken cancellationToken)
+	public async Task<IReadOnlyCollection<PackageVersion>> GetPackageVersionsDesc(
+		StringId packageId, Pagination? pagination, CancellationToken cancellationToken)
 	{
-		var packages = await repositoryFacade.PackageVersions.GetItems(x => x.PackageId == packageId, null,
+		var packages = await repositoryFacade.PackageVersions.GetItems(
+			new GetItemsQuery<PackageVersion> { Filter = x => x.PackageId == packageId },
 			cancellationToken);
 		return packages.OrderByDescending(x => x.Version).ApplyPagination(pagination).ToArray();
 	}
@@ -53,7 +56,8 @@ internal class PackageCatalogService : IPackageCatalogService
 
 	private async Task<string> GetPackageStoragePath(PackageVersion packageVersion, CancellationToken cancellationToken)
 	{
-		var package = (await repositoryFacade.Packages.GetItems(x => x.Id == packageVersion.PackageId, null,
+		var package = (await repositoryFacade.Packages.GetItems(
+			new GetItemsQuery<Package> { Filter = x => x.Id == packageVersion.PackageId },
 			cancellationToken)).First();
 		return $"/{package.CategoryId}/{packageVersion.PackageId}_{packageVersion.Version}";
 	}

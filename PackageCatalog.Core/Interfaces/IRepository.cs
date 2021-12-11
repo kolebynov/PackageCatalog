@@ -1,12 +1,10 @@
-﻿using System.Linq.Expressions;
-using PackageCatalog.Core.Objects;
+﻿using PackageCatalog.Core.Objects;
 
 namespace PackageCatalog.Core.Interfaces;
 
 public interface IRepository<T> where T : class
 {
-	Task<IReadOnlyCollection<T>> GetItems(Expression<Func<T, bool>>? predicate, Pagination? pagination,
-		CancellationToken cancellationToken);
+	Task<IReadOnlyCollection<T>> GetItems(GetItemsQuery<T>? getItemsQuery, CancellationToken cancellationToken);
 
 	Task Add(T item, CancellationToken cancellationToken);
 

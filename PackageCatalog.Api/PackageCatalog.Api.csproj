@@ -6,6 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.3.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -15,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\PackageCatalog.Contracts\PackageCatalog.Contracts.csproj" />
       <ProjectReference Include="..\PackageCatalog.EfRepository\PackageCatalog.EfRepository.csproj" />
       <ProjectReference Include="..\PackageCatalog.FileSystemStorage\PackageCatalog.FileSystemStorage.csproj" />
     </ItemGroup>

@@ -1,9 +1,8 @@
-﻿using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace PackageCatalog.Api.Dto;
+namespace PackageCatalog.Contracts.V1;
 
-public class CategoryDto
+public class PackageV1
 {
 	public string Id { get; init; } = null!;
 

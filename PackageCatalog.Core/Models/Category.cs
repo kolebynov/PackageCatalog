@@ -1,21 +1,18 @@
-﻿namespace PackageCatalog.Core.Models;
+﻿using PackageCatalog.Core.Objects;
+
+namespace PackageCatalog.Core.Models;
 
 public class Category
 {
-	public string Id { get; }
+	public StringId Id { get; }
 
 	public string? DisplayName { get; }
 
-	public Category(string id, string? displayName)
+	public Category(StringId id, string? displayName)
 	{
-		if (string.IsNullOrEmpty(id))
-		{
-			throw new ArgumentException("Value cannot be null or empty.", nameof(id));
-		}
-
-		Id = id;
+		Id = id ?? throw new ArgumentNullException(nameof(id));
 		DisplayName = displayName;
 	}
 
-	public override string ToString() => DisplayName ?? Id;
+	public override string ToString() => DisplayName ?? Id.Value;
 }

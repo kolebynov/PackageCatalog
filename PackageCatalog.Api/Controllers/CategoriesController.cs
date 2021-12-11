@@ -1,46 +1,64 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PackageCatalog.Api.Dto;
+using PackageCatalog.Api.Extensions;
+using PackageCatalog.Api.Interfaces;
+using PackageCatalog.Contracts.V1;
 using PackageCatalog.Core.Interfaces;
+using PackageCatalog.Core.Objects;
 
 namespace PackageCatalog.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[ApiVersion("1.0")]
+[Route("api/[controller]")]
 public class CategoriesController : ControllerBase
 {
 	private readonly IPackageCatalogService packageCatalogService;
+	private readonly ISkipTokenGenerator skipTokenGenerator;
 
-	public CategoriesController(IPackageCatalogService packageCatalogService)
+	public CategoriesController(IPackageCatalogService packageCatalogService, ISkipTokenGenerator skipTokenGenerator)
 	{
 		this.packageCatalogService = packageCatalogService ?? throw new ArgumentNullException(nameof(packageCatalogService));
+		this.skipTokenGenerator = skipTokenGenerator ?? throw new ArgumentNullException(nameof(skipTokenGenerator));
 	}
 
 	[HttpGet]
-	public async Task<IReadOnlyCollection<CategoryDto>> GetCategories(CancellationToken cancellationToken)
+	[ProducesResponseType(typeof(CollectionResponseV1<CategoryV1>), StatusCodes.Status200OK)]
+	[MapToApiVersion("1.0")]
+	public async Task<CollectionResponseV1<CategoryV1>> GetCategories(
+		[FromQuery] PaginationV1 pagination, CancellationToken cancellationToken)
 	{
-		return (await packageCatalogService.GetCategories(null, cancellationToken))
-			.Select(x => new CategoryDto
+		return (await packageCatalogService.GetCategories(pagination.ToPaginationObject(skipTokenGenerator), cancellationToken))
+			.Select(x => new CategoryV1
 			{
-				Id = x.Id,
+				Id = x.Id.Value,
 				DisplayName = x.DisplayName,
 			})
-			.ToArray();
+			.ToArray()
+			.ToCollectionResponseV1(this, skipTokenGenerator, pagination);
 	}
 
 	[HttpGet("{categoryId}/packages")]
-	public async Task<IActionResult> GetPackages(string categoryId, CancellationToken cancellationToken)
+	[ProducesResponseType(typeof(CollectionResponseV1<PackageV1>), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+	[MapToApiVersion("1.0")]
+	public async Task<IActionResult> GetPackages(string categoryId, [FromQuery] PaginationV1 pagination,
+		CancellationToken cancellationToken)
 	{
-		if (await packageCatalogService.FindCategory(categoryId, cancellationToken) != null)
+		if (await packageCatalogService.FindCategory(new StringId(categoryId), cancellationToken) == null)
 		{
-			return Ok((await packageCatalogService.GetPackages(categoryId, null, cancellationToken))
-				.Select(x => new PackageDto
-				{
-					Id = x.Id,
-					DisplayName = x.DisplayName,
-				})
-				.ToArray());
+			return Problem($"Category \"{categoryId}\" not found", statusCode: StatusCodes.Status404NotFound);
 		}
 
-		return ValidationProblem($"Category \"{categoryId}\" not found", statusCode: StatusCodes.Status404NotFound);
+		var response = (await packageCatalogService.GetPackages(
+				new StringId(categoryId), pagination.ToPaginationObject(skipTokenGenerator), cancellationToken))
+			.Select(x => new PackageV1
+			{
+				Id = x.Id.Value,
+				DisplayName = x.DisplayName,
+			})
+			.ToArray()
+			.ToCollectionResponseV1(this, skipTokenGenerator, pagination);
+
+		return Ok(response);
 	}
 }

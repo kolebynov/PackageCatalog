@@ -1,8 +1,9 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NuGet.Versioning;
 using PackageCatalog.Core.Models;
+using PackageCatalog.Core.Objects;
 
 namespace PackageCatalog.EfRepository.Internal;
 
@@ -23,10 +24,13 @@ public class PackageCatalogDbContext : DbContext
 	{
 		base.OnModelCreating(modelBuilder);
 
+		var stringIdConverter = new ValueConverter<StringId, string>(x => x.Value, x => new StringId(x));
+
 		modelBuilder.Entity<Category>(x =>
 		{
 			x.ToTable(nameof(Category));
 			x.HasKey(y => y.Id);
+			x.Property(y => y.Id).HasConversion(stringIdConverter);
 			x.Property(y => y.DisplayName);
 		});
 
@@ -34,6 +38,8 @@ public class PackageCatalogDbContext : DbContext
 		{
 			x.ToTable(nameof(Package));
 			x.HasKey(y => y.Id);
+			x.Property(y => y.Id).HasConversion(stringIdConverter);
+			x.Property(y => y.CategoryId).HasConversion(stringIdConverter);
 			x.HasOne(typeof(Category))
 				.WithMany()
 				.HasForeignKey(nameof(Package.CategoryId));
@@ -47,6 +53,7 @@ public class PackageCatalogDbContext : DbContext
 			x.HasOne(typeof(Package))
 				.WithMany()
 				.HasForeignKey(nameof(PackageVersion.PackageId));
+			x.Property(y => y.PackageId).HasConversion(stringIdConverter);
 			x.Property(y => y.AdditionalInfo)
 				.HasConversion(
 					y => JsonSerializer.Serialize(y, (JsonSerializerOptions?)null),

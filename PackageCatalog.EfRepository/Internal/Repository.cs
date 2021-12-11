@@ -1,7 +1,4 @@
-﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using PackageCatalog.Core.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
 using PackageCatalog.Core.Interfaces;
 using PackageCatalog.Core.Objects;
 
@@ -10,26 +7,18 @@ namespace PackageCatalog.EfRepository.Internal;
 internal class Repository<T> : IRepository<T> where T : class
 {
 	private readonly PackageCatalogDbContext context;
-	private readonly ILogger<Repository<T>> logger;
 	private readonly DbSet<T> dbSet;
 
-	public Repository(PackageCatalogDbContext context, ILogger<Repository<T>> logger)
+	public Repository(PackageCatalogDbContext context)
 	{
 		this.context = context ?? throw new ArgumentNullException(nameof(context));
-		this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		dbSet = context.Set<T>();
 	}
 
-	public async Task<IReadOnlyCollection<T>> GetItems(Expression<Func<T, bool>>? predicate, Pagination? pagination,
-		CancellationToken cancellationToken)
+	public async Task<IReadOnlyCollection<T>> GetItems(GetItemsQuery<T>? getItemsQuery, CancellationToken cancellationToken)
 	{
-		var query = dbSet.AsQueryable();
-		if (predicate != null)
-		{
-			query = query.Where(predicate);
-		}
-
-		return await query.ApplyPagination(pagination).ToArrayAsync(cancellationToken);
+		var query = getItemsQuery?.ApplyQuery(dbSet.AsQueryable()) ?? dbSet.AsQueryable();
+		return await query.ToArrayAsync(cancellationToken);
 	}
 
 	public async Task Add(T item, CancellationToken cancellationToken)
@@ -38,7 +27,7 @@ internal class Repository<T> : IRepository<T> where T : class
 		await context.SaveChangesAsync(cancellationToken);
 	}
 
-	public virtual async Task Update(T entity, CancellationToken cancellationToken)
+	public async Task Update(T entity, CancellationToken cancellationToken)
 	{
 		dbSet.Update(entity);
 		await context.SaveChangesAsync(cancellationToken);
