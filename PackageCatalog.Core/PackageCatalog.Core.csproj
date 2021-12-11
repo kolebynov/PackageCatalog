@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="NuGet.Versioning" Version="6.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\PackageCatalog.Shared\PackageCatalog.Shared.csproj" />
     </ItemGroup>
 

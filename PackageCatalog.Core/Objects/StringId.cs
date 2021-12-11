@@ -22,7 +22,7 @@ public class StringId : IEquatable<StringId>
 			throw new ArgumentException($"Id doesn't match regex pattern {IdRegex}");
 		}
 
-		this.Value = value;
+		Value = value;
 	}
 
 	public override string ToString() => Value;
@@ -54,7 +54,7 @@ public class StringId : IEquatable<StringId>
 			return true;
 		}
 
-		if (obj.GetType() != this.GetType())
+		if (obj.GetType() != GetType())
 		{
 			return false;
 		}
@@ -63,4 +63,7 @@ public class StringId : IEquatable<StringId>
 	}
 
 	public override int GetHashCode() => Value.GetHashCode(StringComparison.Ordinal);
+
+	public static StringId? FromNullableString(string? value) =>
+		!string.IsNullOrEmpty(value) ? new StringId(value) : null;
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using PackageCatalog.Api.Interfaces;
 using PackageCatalog.Api.Objects;
 using PackageCatalog.Contracts.V1;
+using PackageCatalog.Core.Models;
 using PackageCatalog.Core.Objects;
 
 namespace PackageCatalog.Api.Extensions;
@@ -19,7 +20,7 @@ public static class ContractExtensions
 		}
 
 		var newValues = controller.ModelState
-			.Where(x => x.Value?.AttemptedValue != null)
+			.Where(x => x.Value?.AttemptedValue != null && !x.Key.Equals("skipToken", StringComparison.OrdinalIgnoreCase))
 			.ToDictionary(x => x.Key, x => x.Value!.AttemptedValue);
 		newValues["skipToken"] = skipTokenGenerator.GenerateSkipToken(
 			new SkipToken { Skip = GetSkip(paginationV1, skipTokenGenerator) + paginationV1.Top });
@@ -32,6 +33,25 @@ public static class ContractExtensions
 
 	public static Pagination ToPaginationObject(this PaginationV1 paginationV1, ISkipTokenGenerator skipTokenGenerator) =>
 		new(paginationV1.Top, GetSkip(paginationV1, skipTokenGenerator));
+
+	public static CategoryV1 ToContractV1(this Category package) => new()
+	{
+		Id = package.Id.Value,
+		DisplayName = package.DisplayName,
+	};
+
+	public static PackageV1 ToContractV1(this Package package) => new()
+	{
+		Id = package.Id.Value,
+		DisplayName = package.DisplayName,
+		CategoryId = package.CategoryId.Value,
+	};
+
+	public static PackageVersionV1 ToContractV1(this PackageVersion packageVersion) => new()
+	{
+		PackageId = packageVersion.PackageId.Value,
+		Version = packageVersion.Version,
+	};
 
 	private static int GetSkip(PaginationV1 paginationV1, ISkipTokenGenerator skipTokenGenerator) =>
 		string.IsNullOrEmpty(paginationV1.SkipToken)

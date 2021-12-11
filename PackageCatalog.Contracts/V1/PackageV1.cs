@@ -8,4 +8,6 @@ public class PackageV1
 
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 	public string? DisplayName { get; init; }
+
+	public string CategoryId { get; init; } = null!;
 }

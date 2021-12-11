@@ -36,5 +36,6 @@
     <Rule Id="CA2007" Action="None" Description="Do not directly await a Task without calling ConfigureAwait." />
     <Rule Id="CA2234" Action="None" />
     <Rule Id="CA2237" Action="None" Description="Mark ISerializable types with SerializableAttribute" />
+    <Rule Id="CA5394" Action="None" Description="Random is an insecure random number generator. Use cryptographically secure random number generators when randomness is required for security." />
   </Rules>
 </RuleSet>

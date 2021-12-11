@@ -1,14 +1,20 @@
+using System.Security.Claims;
 using Hellang.Middleware.ProblemDetails;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PackageCatalog.Api;
+using PackageCatalog.Api.Configuration;
 using PackageCatalog.Api.Infrastructure;
 using PackageCatalog.Api.Interfaces;
 using PackageCatalog.Api.Internal;
+using PackageCatalog.Core.Exceptions;
 using PackageCatalog.Core.Extensions;
 using PackageCatalog.EfRepository.Extensions;
 using PackageCatalog.FileSystemStorage.Extensions;
@@ -19,6 +25,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddProblemDetails(opt =>
 {
 	opt.IncludeExceptionDetails = (_, _) => false;
+	opt.Map<NotFoundPackageCatalogException>((context, e) =>
+	{
+		var factory = context.RequestServices.GetRequiredService<ProblemDetailsFactory>();
+		return factory.CreateProblemDetails(context, StatusCodes.Status404NotFound, detail: e.Message);
+	});
 	opt.Map<Exception>((context, e) =>
 	{
 		var factory = context.RequestServices.GetRequiredService<ProblemDetailsFactory>();
@@ -26,6 +37,22 @@ builder.Services.AddProblemDetails(opt =>
 	});
 });
 builder.Services.AddControllers();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+	.AddJwtBearer(opt =>
+	{
+		opt.RequireHttpsMetadata = true;
+		opt.TokenValidationParameters = new TokenValidationParameters
+		{
+			ValidateIssuer = true,
+			ValidIssuer = JwtOptions.Issuer,
+			ValidateAudience = true,
+			ValidAudience = JwtOptions.Audience,
+			ValidateLifetime = true,
+			LifetimeValidator = null,
+			IssuerSigningKey = JwtOptions.SymmetricSecurityKey,
+			ValidateIssuerSigningKey = true,
+		};
+	});
 builder.Services.AddApiVersioning(opt =>
 {
 	opt.ReportApiVersions = true;
@@ -41,7 +68,7 @@ builder.Services.AddOptions<SwaggerGenOptions>()
 		{
 			opt.SwaggerDoc(
 				description.GroupName,
-				new OpenApiInfo()
+				new OpenApiInfo
 				{
 					Title = $"Sample API {description.ApiVersion}",
 					Version = description.ApiVersion.ToString(),
@@ -52,7 +79,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddCorePackageServices();
-builder.Services.AddFileSystemPackageStorage();
+builder.Services.AddFileSystemPackageStorage(opt => builder.Configuration.Bind("packageStorage", opt));
 builder.Services.AddEfPackageRepository(opt =>
 {
 	var connectionStringBuilder = new SqliteConnectionStringBuilder(builder.Configuration["connectionString"])
@@ -62,9 +89,14 @@ builder.Services.AddEfPackageRepository(opt =>
 	opt.UseSqlite(connectionStringBuilder.ToString());
 });
 
+builder.Services.Configure<TempContentStorageSettings>(builder.Configuration.GetSection("tempContentStorage"));
+
 builder.Services.AddScoped<DatabaseMaintenance>();
 
 builder.Services.AddSingleton<ISkipTokenGenerator, SkipTokenGenerator>();
+builder.Services.AddSingleton<ITempContentStorage, TempContentStorage>();
+
+builder.Services.AddHostedService(sp => (TempContentStorage)sp.GetRequiredService<ITempContentStorage>());
 
 var app = builder.Build();
 

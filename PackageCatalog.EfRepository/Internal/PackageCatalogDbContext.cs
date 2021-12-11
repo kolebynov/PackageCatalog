@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NuGet.Versioning;
 using PackageCatalog.Core.Models;
 using PackageCatalog.Core.Objects;
 
@@ -61,9 +60,29 @@ public class PackageCatalogDbContext : DbContext
 						? JsonSerializer.Deserialize<IReadOnlyDictionary<string, string>>(y, (JsonSerializerOptions?)null)
 						: null);
 			x.Property(y => y.Version)
-				.HasConversion(y => y.ToString(), y => NuGetVersion.Parse(y));
-			x.Property(y => y.Checksum);
+				.HasConversion(y => VersionToLong(y), y => LongToVersion(y));
 			x.Property(y => y.Size);
 		});
+	}
+
+	private static long VersionToLong(Version version)
+	{
+		return ((long)version.Major << 48) | ((long)version.Minor << 32 & 0xFFFF00000000)
+		                                   | ((long)version.Build << 16 & 0xFFFF0000) | (long)version.Revision & 0xFFFF;
+	}
+
+	private static Version LongToVersion(long version)
+	{
+		var major = (short)((version >> 48) & 0xFFFF);
+		var minor = (short)((version >> 32) & 0xFFFF);
+		var build = (short)((version >> 16) & 0xFFFF);
+		var revision = (short)(version & 0xFFFF);
+
+		return (build, revision) switch
+		{
+			(-1, -1) => new Version(major, minor),
+			(_, -1) => new Version(major, minor, build),
+			_ => new Version(major, minor, build, revision),
+		};
 	}
 }
