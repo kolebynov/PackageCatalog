@@ -5,13 +5,18 @@ namespace PackageCatalog.Core.Interfaces;
 
 public interface IPackageCatalogService
 {
-	Task<IReadOnlyCollection<Category>> GetCategories(Pagination? pagination, CancellationToken cancellationToken);
+	Task<IReadOnlyCollection<Category>> GetCategories(
+		GetItemsQuery<Category>? query, CancellationToken cancellationToken);
 
-	Task<IReadOnlyCollection<Package>> GetPackages(StringId? categoryId, Pagination? pagination,
-		CancellationToken cancellationToken);
+	Task<Category> AddCategory(AddCategoryData addCategoryData, CancellationToken cancellationToken);
 
-	Task<IReadOnlyCollection<PackageVersion>> GetPackageVersionsDesc(StringId packageId, Pagination? pagination,
-		CancellationToken cancellationToken);
+	Task<IReadOnlyCollection<Package>> GetPackages(
+		GetItemsQuery<Package>? query, CancellationToken cancellationToken);
+
+	Task<Package> AddPackage(AddPackageData addPackageData, CancellationToken cancellationToken);
+
+	Task<IReadOnlyCollection<PackageVersion>> GetPackageVersionsDesc(
+		StringId packageId, GetItemsQuery<PackageVersion>? query, CancellationToken cancellationToken);
 
 	Task<PackageVersion> AddPackageVersion(
 		AddPackageVersionData addPackageVersionData, CancellationToken cancellationToken);

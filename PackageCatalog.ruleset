@@ -27,6 +27,7 @@
     <Rule Id="CA1062" Action="None" />
     <Rule Id="CA1303" Action="None" Description="Do not pass literals as localized parameters."/>
     <Rule Id="CA1707" Action="None" />
+    <Rule Id="CA1710" Action="None" Description="Rename PackageCatalog.Api.Objects.Scope to end in 'Collection'" />
     <Rule Id="CA1711" Action="None" />
     <Rule Id="CA1716" Action="None" />
     <Rule Id="CA1720" Action="None" />

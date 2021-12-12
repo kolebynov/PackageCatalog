@@ -4,6 +4,7 @@ using PackageCatalog.Api.Extensions;
 using PackageCatalog.Api.Interfaces;
 using PackageCatalog.Contracts.V1;
 using PackageCatalog.Core.Interfaces;
+using PackageCatalog.Core.Models;
 using PackageCatalog.Core.Objects;
 
 namespace PackageCatalog.Api.Controllers;
@@ -11,6 +12,7 @@ namespace PackageCatalog.Api.Controllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
+[Authorize]
 public class PackagesController : ControllerBase
 {
 	private readonly IPackageCatalogService packageCatalogService;
@@ -29,10 +31,10 @@ public class PackagesController : ControllerBase
 	[HttpGet]
 	[MapToApiVersion("1.0")]
 	public async Task<CollectionResponseV1<PackageV1>> GetPackages(
-		[FromQuery] string? categoryId, [FromQuery] PaginationV1 pagination, CancellationToken cancellationToken)
+		[FromQuery] PaginationV1 pagination, CancellationToken cancellationToken)
 	{
 		var packages = await packageCatalogService.GetPackages(
-			StringId.FromNullableString(categoryId), pagination.ToPaginationObject(skipTokenGenerator),
+			new GetItemsQuery<Package> { Pagination = pagination.ToPaginationObject(skipTokenGenerator) },
 			cancellationToken);
 
 		return packages
@@ -41,18 +43,42 @@ public class PackagesController : ControllerBase
 			.ToCollectionResponseV1(this, skipTokenGenerator, pagination);
 	}
 
+	[HttpPost]
+	[MapToApiVersion("1.0")]
+	public async Task<PackageV1> AddPackage(
+		[FromBody] AddPackageRequestV1 addPackageRequestV1, CancellationToken cancellationToken)
+	{
+		var package = await packageCatalogService.AddPackage(
+			new AddPackageData(new StringId(addPackageRequestV1.PackageId), addPackageRequestV1.DisplayName,
+				new StringId(addPackageRequestV1.CategoryId)),
+			cancellationToken);
+		return package.ToContractV1();
+	}
+
 	[HttpGet("{packageId}/versions")]
 	[MapToApiVersion("1.0")]
 	public async Task<CollectionResponseV1<PackageVersionV1>> GetPackageVersions(
 		string packageId, [FromQuery] PaginationV1 pagination, CancellationToken cancellationToken)
 	{
 		var packageVersions = await packageCatalogService.GetPackageVersionsDesc(
-			new StringId(packageId), pagination.ToPaginationObject(skipTokenGenerator), cancellationToken);
+			new StringId(packageId),
+			new GetItemsQuery<PackageVersion> { Pagination = pagination.ToPaginationObject(skipTokenGenerator) },
+			cancellationToken);
 
 		return packageVersions
 			.Select(x => x.ToContractV1())
 			.ToArray()
 			.ToCollectionResponseV1(this, skipTokenGenerator, pagination);
+	}
+
+	[HttpGet("{packageId}/versions/{version}/content")]
+	[MapToApiVersion("1.0")]
+	public async Task<FileStreamResult> GetPackageVersionContent(
+		string packageId, Version version, CancellationToken cancellationToken)
+	{
+		var stream = await packageCatalogService.GetPackageVersionContent(new StringId(packageId), version,
+			cancellationToken);
+		return File(stream, "application/octet-stream");
 	}
 
 	[HttpPost("{packageId}/versions")]
@@ -69,15 +95,5 @@ public class PackagesController : ControllerBase
 			cancellationToken);
 
 		return newPackageVersion.ToContractV1();
-	}
-
-	[HttpGet("{packageId}/versions/{version}/content")]
-	[MapToApiVersion("1.0")]
-	public async Task<FileStreamResult> GetPackageVersionContent(
-		string packageId, Version version, CancellationToken cancellationToken)
-	{
-		var stream = await packageCatalogService.GetPackageVersionContent(new StringId(packageId), version,
-			cancellationToken);
-		return File(stream, "application/octet-stream");
 	}
 }

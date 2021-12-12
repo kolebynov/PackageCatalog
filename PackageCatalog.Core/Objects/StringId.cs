@@ -4,9 +4,7 @@ namespace PackageCatalog.Core.Objects;
 
 public class StringId : IEquatable<StringId>
 {
-	public const string IdRegexStr = "^[A-Za-z]+$";
-
-	private static readonly Regex IdRegex = new(IdRegexStr, RegexOptions.Compiled);
+	private static readonly Regex IdRegex = new("^[A-Za-z]+$", RegexOptions.Compiled);
 
 	public string Value { get; }
 

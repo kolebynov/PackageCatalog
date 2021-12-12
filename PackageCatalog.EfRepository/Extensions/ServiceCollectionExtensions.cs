@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using PackageCatalog.Core.Interfaces;
 using PackageCatalog.EfRepository.Internal;
 
@@ -13,7 +14,7 @@ public static class ServiceCollectionExtensions
 		_ = services ?? throw new ArgumentNullException(nameof(services));
 		services.AddDbContext<PackageCatalogDbContext>(optionsAction);
 
-		services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+		services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 		return services;
 	}

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PackageCatalog.Api.Extensions;
 using PackageCatalog.Api.Interfaces;
 using PackageCatalog.Contracts.V1;
 using PackageCatalog.Core.Interfaces;
+using PackageCatalog.Core.Models;
 using PackageCatalog.Core.Objects;
 
 namespace PackageCatalog.Api.Controllers;
@@ -10,6 +12,7 @@ namespace PackageCatalog.Api.Controllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
+[Authorize]
 public class CategoriesController : ControllerBase
 {
 	private readonly IPackageCatalogService packageCatalogService;
@@ -26,10 +29,23 @@ public class CategoriesController : ControllerBase
 	public async Task<CollectionResponseV1<CategoryV1>> GetCategories(
 		[FromQuery] PaginationV1 pagination, CancellationToken cancellationToken)
 	{
-		return (await packageCatalogService.GetCategories(pagination.ToPaginationObject(skipTokenGenerator), cancellationToken))
+		return (await packageCatalogService.GetCategories(
+				new GetItemsQuery<Category> { Pagination = pagination.ToPaginationObject(skipTokenGenerator) },
+				cancellationToken))
 			.Select(x => x.ToContractV1())
 			.ToArray()
 			.ToCollectionResponseV1(this, skipTokenGenerator, pagination);
+	}
+
+	[HttpPost]
+	[MapToApiVersion("1.0")]
+	public async Task<CategoryV1> AddCategory(
+		[FromBody] AddCategoryRequestV1 addCategoryRequestV1, CancellationToken cancellationToken)
+	{
+		var category = await packageCatalogService.AddCategory(
+			new AddCategoryData(new StringId(addCategoryRequestV1.Id), addCategoryRequestV1.DisplayName),
+			cancellationToken);
+		return category.ToContractV1();
 	}
 
 	[HttpGet("{categoryId}/packages")]
@@ -39,8 +55,21 @@ public class CategoriesController : ControllerBase
 	public async Task<IActionResult> GetPackages(string categoryId, [FromQuery] PaginationV1 pagination,
 		CancellationToken cancellationToken)
 	{
+		var categories = await packageCatalogService.GetCategories(
+			new GetItemsQuery<Category> { Filters = { x => x.Id.Equals(new StringId(categoryId)) } },
+			cancellationToken);
+		if (!categories.Any())
+		{
+			return Problem($"Category \"{categoryId}\" not found", statusCode: StatusCodes.Status404NotFound);
+		}
+
 		var response = (await packageCatalogService.GetPackages(
-				new StringId(categoryId), pagination.ToPaginationObject(skipTokenGenerator), cancellationToken))
+				new GetItemsQuery<Package>
+				{
+					Filters = { x => x.CategoryId.Equals(new StringId(categoryId)) },
+					Pagination = pagination.ToPaginationObject(skipTokenGenerator),
+				},
+				cancellationToken))
 			.Select(x => x.ToContractV1())
 			.ToArray()
 			.ToCollectionResponseV1(this, skipTokenGenerator, pagination);

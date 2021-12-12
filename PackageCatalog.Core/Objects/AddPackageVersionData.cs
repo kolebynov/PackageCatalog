@@ -1,21 +1,11 @@
 ﻿namespace PackageCatalog.Core.Objects;
 
-public class AddPackageVersionData
+public record AddPackageVersionData(StringId PackageId, Version Version,
+	IReadOnlyDictionary<string, string>? AdditionalData, Stream Content)
 {
-	public StringId PackageId { get; }
+	public StringId PackageId { get; } = PackageId ?? throw new ArgumentNullException(nameof(PackageId));
 
-	public Version Version { get; }
+	public Version Version { get; } = Version ?? throw new ArgumentNullException(nameof(Version));
 
-	public IReadOnlyDictionary<string, string>? AdditionalData { get; }
-
-	public Stream Content { get; }
-
-	public AddPackageVersionData(StringId packageId, Version version,
-		IReadOnlyDictionary<string, string>? additionalData, Stream content)
-	{
-		PackageId = packageId ?? throw new ArgumentNullException(nameof(packageId));
-		Version = version ?? throw new ArgumentNullException(nameof(version));
-		Content = content ?? throw new ArgumentNullException(nameof(content));
-		AdditionalData = additionalData;
-	}
+	public Stream Content { get; } = Content ?? throw new ArgumentNullException(nameof(Content));
 }

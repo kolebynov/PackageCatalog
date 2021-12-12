@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PackageCatalog.Api;
@@ -14,8 +13,10 @@ using PackageCatalog.Api.Configuration;
 using PackageCatalog.Api.Infrastructure;
 using PackageCatalog.Api.Interfaces;
 using PackageCatalog.Api.Internal;
+using PackageCatalog.Core;
 using PackageCatalog.Core.Exceptions;
 using PackageCatalog.Core.Extensions;
+using PackageCatalog.Core.Interfaces;
 using PackageCatalog.EfRepository.Extensions;
 using PackageCatalog.FileSystemStorage.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -24,7 +25,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails(opt =>
 {
-	opt.IncludeExceptionDetails = (_, _) => false;
+	opt.ShouldLogUnhandledException = (_, exception, _) => exception switch
+	{
+		NotFoundPackageCatalogException => false,
+		_ => true,
+	};
 	opt.Map<NotFoundPackageCatalogException>((context, e) =>
 	{
 		var factory = context.RequestServices.GetRequiredService<ProblemDetailsFactory>();
@@ -48,11 +53,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			ValidateAudience = true,
 			ValidAudience = JwtOptions.Audience,
 			ValidateLifetime = true,
-			LifetimeValidator = null,
 			IssuerSigningKey = JwtOptions.SymmetricSecurityKey,
 			ValidateIssuerSigningKey = true,
 		};
 	});
+builder.Services.AddAuthorization();
 builder.Services.AddApiVersioning(opt =>
 {
 	opt.ReportApiVersions = true;
@@ -76,7 +81,31 @@ builder.Services.AddOptions<SwaggerGenOptions>()
 		}
 	});
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(opt =>
+{
+	opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+	{
+		In = ParameterLocation.Header,
+		Description = "Please insert JWT with Bearer into field",
+		Name = "Authorization",
+		Type = SecuritySchemeType.ApiKey,
+	});
+	opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+	{
+		{
+			new OpenApiSecurityScheme
+			{
+				Reference = new OpenApiReference
+				{
+					Type = ReferenceType.SecurityScheme,
+					Id = "Bearer",
+				},
+			},
+			Array.Empty<string>()
+		},
+	});
+});
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddCorePackageServices();
 builder.Services.AddFileSystemPackageStorage(opt => builder.Configuration.Bind("packageStorage", opt));
@@ -92,9 +121,15 @@ builder.Services.AddEfPackageRepository(opt =>
 builder.Services.Configure<TempContentStorageSettings>(builder.Configuration.GetSection("tempContentStorage"));
 
 builder.Services.AddScoped<DatabaseMaintenance>();
+builder.Services.AddScoped<IScopeAccessor, ScopeAccessor>();
+builder.Services.AddScoped<PackageCatalogService>();
+builder.Services.Replace(ServiceDescriptor.Scoped<IPackageCatalogService>(
+	sp => ActivatorUtilities.CreateInstance<ScopePackageCatalogService>(
+		sp, sp.GetRequiredService<PackageCatalogService>())));
 
 builder.Services.AddSingleton<ISkipTokenGenerator, SkipTokenGenerator>();
 builder.Services.AddSingleton<ITempContentStorage, TempContentStorage>();
+builder.Services.AddSingleton<IScopeParser, ScopeParser>();
 
 builder.Services.AddHostedService(sp => (TempContentStorage)sp.GetRequiredService<ITempContentStorage>());
 
@@ -119,6 +154,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -10,5 +10,5 @@ internal class JwtOptions
 
 	private const string Key = "0123456789ABCDEF";
 
-	public static SymmetricSecurityKey SymmetricSecurityKey => new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Key));
+	public static SymmetricSecurityKey SymmetricSecurityKey => new(Encoding.ASCII.GetBytes(Key));
 }

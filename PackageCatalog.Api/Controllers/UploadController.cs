@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PackageCatalog.Api.Infrastructure;
 using PackageCatalog.Api.Interfaces;
 using PackageCatalog.Contracts.V1;
 
@@ -20,6 +21,7 @@ public class UploadController : ControllerBase
 	[MapToApiVersion("1.0")]
 	[ProducesResponseType(typeof(UploadContentResponseV1), StatusCodes.Status200OK)]
 	[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+	[RequireScope(ScopeConstants.Upload)]
 	public async Task<IActionResult> UploadContent(IFormFile content, CancellationToken cancellationToken)
 	{
 		var ticket = await tempContentStorage.StoreTempContent(content.OpenReadStream(), cancellationToken);

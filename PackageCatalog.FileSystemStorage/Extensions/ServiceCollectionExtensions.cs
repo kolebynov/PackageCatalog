@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using PackageCatalog.Core.Interfaces;
@@ -17,7 +18,7 @@ public static class ServiceCollectionExtensions
 
 		services.Configure(optionsAction);
 
-		services.AddSingleton<IPackageStorage>(sp =>
+		services.TryAddSingleton<IPackageStorage>(sp =>
 		{
 			var storagePath = Path.GetFullPath(
 				sp.GetRequiredService<IOptions<FileSystemStorageSettings>>().Value.Path);
