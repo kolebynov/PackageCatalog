@@ -8,4 +8,7 @@ public class CollectionResponseV1<T>
 
 	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 	public Uri? NextUri { get; init; }
+
+	[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+	public string? SkipToken { get; init; }
 }

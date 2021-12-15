@@ -22,13 +22,14 @@ public static class ContractExtensions
 		var newValues = controller.ModelState
 			.Where(x => x.Value?.AttemptedValue != null && !x.Key.Equals("skipToken", StringComparison.OrdinalIgnoreCase))
 			.ToDictionary(x => x.Key, x => x.Value!.AttemptedValue);
-		newValues["skipToken"] = skipTokenGenerator.GenerateSkipToken(
+		var skipToken = skipTokenGenerator.GenerateSkipToken(
 			new SkipToken { Skip = GetSkip(paginationV1, skipTokenGenerator) + paginationV1.Top });
+		newValues["skipToken"] = skipToken;
 		newValues[Constants.ApiVersionParameterName] = controller.HttpContext.Features.Get<IApiVersioningFeature>()
 			!.RequestedApiVersion?.ToString();
 
 		var nextUri = new Uri(controller.Url.ActionLink(values: newValues)!);
-		return new() { Data = data, NextUri = nextUri };
+		return new() { Data = data, NextUri = nextUri, SkipToken = skipToken };
 	}
 
 	public static Pagination ToPaginationObject(this PaginationV1 paginationV1, ISkipTokenGenerator skipTokenGenerator) =>

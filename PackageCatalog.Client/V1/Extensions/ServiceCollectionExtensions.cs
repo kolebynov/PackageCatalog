@@ -1,10 +1,12 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PackageCatalog.Client.Configuration;
 using PackageCatalog.Client.V1.Interfaces;
+using PackageCatalog.Client.V1.Internal;
+using PackageCatalog.Shared.Extensions;
 using Polly;
-using Polly.Extensions.Http;
 using Refit;
 
 namespace PackageCatalog.Client.V1.Extensions;
@@ -16,7 +18,8 @@ public static class ServiceCollectionExtensions
 	{
 		_ = services ?? throw new ArgumentNullException(nameof(services));
 
-		services.AddRefitClient<IPackageCatalogV1>()
+		services.AddSharedPackageServices();
+		services.AddRefitClient<ILowLevelClientV1>()
 			.ConfigureHttpClient((sp, httpClient) =>
 			{
 				var settings = sp.GetRequiredService<IOptions<ClientSettings>>().Value;
@@ -26,11 +29,16 @@ public static class ServiceCollectionExtensions
 			})
 			.AddPolicyHandler(GetRetryPolicy());
 
+		services.Configure(settingsAction);
+
+		services.AddTransient<IPackageCatalogClientV1, PackageCatalogClientV1>();
+
 		return services;
 	}
 
 	private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
-		HttpPolicyExtensions
-			.HandleTransientHttpError()
+		Policy<HttpResponseMessage>
+			.Handle<HttpRequestException>()
+			.OrResult(r => r.StatusCode is > HttpStatusCode.NotImplemented or HttpStatusCode.RequestTimeout)
 			.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 }
