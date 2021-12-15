@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Shared", "Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Contracts", "PackageCatalog.Contracts\PackageCatalog.Contracts.csproj", "{55375511-3EBD-42FB-A7F1-4C28071C5C50}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Client", "PackageCatalog.Client\PackageCatalog.Client.csproj", "{CAC7DA24-58A3-420C-9074-94BC4D151847}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,5 +52,9 @@ Global
 		{55375511-3EBD-42FB-A7F1-4C28071C5C50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55375511-3EBD-42FB-A7F1-4C28071C5C50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55375511-3EBD-42FB-A7F1-4C28071C5C50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAC7DA24-58A3-420C-9074-94BC4D151847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAC7DA24-58A3-420C-9074-94BC4D151847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAC7DA24-58A3-420C-9074-94BC4D151847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAC7DA24-58A3-420C-9074-94BC4D151847}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
