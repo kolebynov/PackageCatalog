@@ -6,7 +6,7 @@ using PackageCatalog.Core.Objects;
 
 namespace PackageCatalog.EfRepository.Internal;
 
-public class PackageCatalogDbContext : DbContext
+internal class PackageCatalogDbContext : DbContext
 {
 	public DbSet<Category> Categories { get; set; } = null!;
 

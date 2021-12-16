@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using PackageCatalog.EfRepository.Internal;
 using PackageCatalog.Shared.Interfaces;
 
 namespace PackageCatalog.Api.Infrastructure;
@@ -8,10 +7,10 @@ namespace PackageCatalog.Api.Infrastructure;
 public class DatabaseMaintenance
 {
 	private readonly ILogger<DatabaseMaintenance> logger;
-	private readonly PackageCatalogDbContext context;
+	private readonly DbContext context;
 	private readonly IFileSystemAdapter fileSystemAdapter;
 
-	public DatabaseMaintenance(ILogger<DatabaseMaintenance> logger, PackageCatalogDbContext context,
+	public DatabaseMaintenance(ILogger<DatabaseMaintenance> logger, DbContext context,
 		IFileSystemAdapter fileSystemAdapter)
 	{
 		this.logger = logger;

@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using PackageCatalog.Core.Extensions;
 using PackageCatalog.Core.Interfaces;
 using PackageCatalog.Core.Objects;
+using PackageCatalog.EfRepository.Internal.Interfaces;
 
 namespace PackageCatalog.EfRepository.Internal;
 
@@ -10,10 +10,12 @@ internal class Repository<T> : IRepository<T> where T : class
 {
 	private readonly PackageCatalogDbContext context;
 	private readonly DbSet<T> dbSet;
+	private readonly IModelInfoProvider<T> modelInfoProvider;
 
-	public Repository(PackageCatalogDbContext context)
+	public Repository(PackageCatalogDbContext context, IModelInfoProvider<T> modelInfoProvider)
 	{
 		this.context = context ?? throw new ArgumentNullException(nameof(context));
+		this.modelInfoProvider = modelInfoProvider ?? throw new ArgumentNullException(nameof(modelInfoProvider));
 		dbSet = context.Set<T>();
 	}
 
@@ -40,7 +42,7 @@ internal class Repository<T> : IRepository<T> where T : class
 		await context.SaveChangesAsync(cancellationToken);
 	}
 
-	private static IQueryable<T> ApplyQuery(IQueryable<T> queryable, GetRepositoryItemsQuery<T>? getItemsQuery)
+	private IQueryable<T> ApplyQuery(IQueryable<T> queryable, GetRepositoryItemsQuery<T>? getItemsQuery)
 	{
 		if (getItemsQuery == null)
 		{
@@ -57,8 +59,12 @@ internal class Repository<T> : IRepository<T> where T : class
 			var orderedQueryable = Order(queryable, getItemsQuery.Orderings.First());
 			queryable = getItemsQuery.Orderings.Skip(1).Aggregate(orderedQueryable, Order);
 		}
+		else if (getItemsQuery.Pagination?.Skip > 0 || getItemsQuery.Pagination?.Top > 0)
+		{
+			queryable = queryable.OrderBy(modelInfoProvider.DefaultOrderKey);
+		}
 
-		return queryable.ApplyPagination(getItemsQuery.Pagination);
+		return ApplyPagination(queryable, getItemsQuery.Pagination);
 	}
 
 	private static IOrderedQueryable<T> Order(
@@ -81,5 +87,20 @@ internal class Repository<T> : IRepository<T> where T : class
 			OrderDirection.Descending => queryable.ThenByDescending(ordering.KeySelector),
 			_ => throw new ArgumentOutOfRangeException(nameof(ordering.Direction), "Invalid order direction"),
 		};
+	}
+
+	private static IQueryable<T> ApplyPagination(IQueryable<T> queryable, Pagination? pagination)
+	{
+		if (pagination?.Skip > 0)
+		{
+			queryable = queryable.Skip(pagination.Skip);
+		}
+
+		if (pagination?.Top > 0)
+		{
+			queryable = queryable.Take(pagination.Top);
+		}
+
+		return queryable;
 	}
 }
