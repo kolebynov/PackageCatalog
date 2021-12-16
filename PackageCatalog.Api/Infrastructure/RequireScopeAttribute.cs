@@ -40,7 +40,7 @@ public sealed class RequireScopeAttribute : Attribute, IAuthorizationFilter
 	private static void SetFailedResult(AuthorizationFilterContext context)
 	{
 		var details = context.HttpContext.RequestServices.GetRequiredService<ProblemDetailsFactory>()
-			.CreateProblemDetails(context.HttpContext, StatusCodes.Status404NotFound);
-		context.Result = new NotFoundObjectResult(details);
+			.CreateProblemDetails(context.HttpContext, StatusCodes.Status403Forbidden, detail: "You don't have permissions");
+		context.Result = new ObjectResult(details) { StatusCode = StatusCodes.Status403Forbidden };
 	}
 }

@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PackageCatalog.Api;
 using PackageCatalog.Api.Configuration;
+using PackageCatalog.Api.Exceptions;
 using PackageCatalog.Api.Infrastructure;
 using PackageCatalog.Api.Interfaces;
 using PackageCatalog.Api.Internal;
@@ -34,6 +35,11 @@ builder.Services.AddProblemDetails(opt =>
 	{
 		var factory = context.RequestServices.GetRequiredService<ProblemDetailsFactory>();
 		return factory.CreateProblemDetails(context, StatusCodes.Status404NotFound, detail: e.Message);
+	});
+	opt.Map<ForbiddenPackageCatalogException>((context, e) =>
+	{
+		var factory = context.RequestServices.GetRequiredService<ProblemDetailsFactory>();
+		return factory.CreateProblemDetails(context, StatusCodes.Status403Forbidden, detail: e.Message);
 	});
 	opt.Map<Exception>((context, e) =>
 	{

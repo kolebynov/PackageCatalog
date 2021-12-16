@@ -1,4 +1,5 @@
-﻿using PackageCatalog.Api.Interfaces;
+﻿using PackageCatalog.Api.Exceptions;
+using PackageCatalog.Api.Interfaces;
 using PackageCatalog.Api.Objects;
 using PackageCatalog.Core.Exceptions;
 using PackageCatalog.Core.Interfaces;
@@ -44,7 +45,7 @@ internal class ScopePackageCatalogService : IPackageCatalogService
 			?.FindInnerScope(ScopeConstants.Categories);
 		if (addScope == null)
 		{
-			throw new NotFoundPackageCatalogException();
+			throw new ForbiddenPackageCatalogException();
 		}
 
 		return innerService.AddCategory(addCategoryData, cancellationToken);
@@ -85,15 +86,15 @@ internal class ScopePackageCatalogService : IPackageCatalogService
 	public Task<Package> AddPackage(AddPackageData addPackageData, CancellationToken cancellationToken)
 	{
 		var scope = scopeAccessor.Scope;
+		if (scope.FindInnerScope(ScopeConstants.Add)?.FindInnerScope(ScopeConstants.Packages) == null)
+		{
+			throw new ForbiddenPackageCatalogException();
+		}
+
 		if (scope.FindInnerScope(ScopeConstants.Get)?.FindInnerScope(ScopeConstants.Categories)
 			    ?.FindInnerScope(addPackageData.CategoryId.Value) == null)
 		{
 			throw NotFoundPackageCatalogException.CreateCategoryNotFound(addPackageData.CategoryId);
-		}
-
-		if (scope.FindInnerScope(ScopeConstants.Add)?.FindInnerScope(ScopeConstants.Packages) == null)
-		{
-			throw new NotFoundPackageCatalogException();
 		}
 
 		return innerService.AddPackage(addPackageData, cancellationToken);
@@ -117,7 +118,7 @@ internal class ScopePackageCatalogService : IPackageCatalogService
 	{
 		if (scopeAccessor.Scope.FindInnerScope(ScopeConstants.Add)?.FindInnerScope(ScopeConstants.PackageVersions) == null)
 		{
-			throw new NotFoundPackageCatalogException();
+			throw new ForbiddenPackageCatalogException();
 		}
 
 		await CheckPackageGetAccess(addPackageVersionData.PackageId, scopeAccessor.Scope, cancellationToken);
