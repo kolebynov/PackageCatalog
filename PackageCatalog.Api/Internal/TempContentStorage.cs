@@ -28,21 +28,28 @@ internal class TempContentStorage : BackgroundService, ITempContentStorage
 		InitializeFolders();
 
 		var localPath = Path.Combine($"{random.Next(0, settings.FoldersCount)}", Path.GetFileName(Path.GetRandomFileName()));
+		var ticket = Convert.ToBase64String(Encoding.UTF8.GetBytes(localPath));
+		logger.LogDebug("Storing temp content. [Ticket: {Ticket}]", ticket);
+
 		using var fileStream = fileSystemAdapter.Open(Path.Combine(settings.Path, localPath), FileMode.Create,
 			FileAccess.Write, FileShare.Read);
 		await stream.CopyToAsync(fileStream, cancellationToken);
 
-		return Convert.ToBase64String(Encoding.UTF8.GetBytes(localPath));
+		logger.LogDebug("Temp content has been saved. [Ticket: {Ticket}][Size: {Size}]", ticket, fileStream.Length);
+
+		return ticket;
 	}
 
 	public Task<Stream> GetTempContent(string ticket, CancellationToken cancellationToken)
 	{
+		logger.LogDebug("Getting temp content. [Ticket: {Ticket}]", ticket);
+
 		var localPath = Encoding.UTF8.GetString(Convert.FromBase64String(ticket));
 		var fullPath = Path.Combine(settings.Path, localPath);
 
 		if (!fileSystemAdapter.FileExists(fullPath))
 		{
-			throw new ArgumentException("Invalid ticket", nameof(ticket));
+			throw new ArgumentException("Invalid or expired ticket", nameof(ticket));
 		}
 
 		return Task.FromResult(fileSystemAdapter.OpenRead(fullPath));

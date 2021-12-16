@@ -26,6 +26,8 @@ internal class PackageStorage : IPackageStorage
 
 	public Task<Stream> GetPackageContent(string path, CancellationToken cancellationToken)
 	{
+		logger.LogInformation("Getting package content. [Path: {Path}]", path);
+
 		var fileInfo = fileProvider.GetFileInfo(path);
 		if (!fileInfo.Exists || fileInfo.IsDirectory)
 		{
@@ -37,7 +39,13 @@ internal class PackageStorage : IPackageStorage
 
 	public async Task StorePackageContent(string path, Stream packageData, CancellationToken cancellationToken)
 	{
+		logger.LogInformation("Storing package content to the path {Path}", path);
+
 		var fullPath = fileProvider.GetFileInfo(path).PhysicalPath;
+		if (string.IsNullOrEmpty(fullPath))
+		{
+			throw new ArgumentException("Incorrect path provided", nameof(path));
+		}
 
 		try
 		{

@@ -18,6 +18,7 @@ using PackageCatalog.Core;
 using PackageCatalog.Core.Exceptions;
 using PackageCatalog.Core.Extensions;
 using PackageCatalog.Core.Interfaces;
+using PackageCatalog.Core.Objects;
 using PackageCatalog.EfRepository.Extensions;
 using PackageCatalog.FileSystemStorage.Extensions;
 using Serilog;
@@ -29,6 +30,10 @@ builder.Host
 	.UseSerilog((context, loggerConfiguration) =>
 		loggerConfiguration
 			.ReadFrom.Configuration(context.Configuration)
+			.Destructure.ByTransforming<AddPackageVersionData>(
+				x => new { x.PackageId, x.Version, x.AdditionalData, PackageSize = x.Content.Length })
+			.Destructure.AsScalar<StringId>()
+			.Destructure.AsScalar<Version>()
 			.Enrich.FromLogContext());
 
 builder.Services.AddProblemDetails(opt =>

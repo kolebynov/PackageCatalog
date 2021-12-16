@@ -23,11 +23,16 @@ public class PackageCatalogService : IPackageCatalogService
 	}
 
 	public Task<IReadOnlyCollection<Category>> GetCategories(
-		GetItemsQuery<Category>? query, CancellationToken cancellationToken) =>
-		repositoryFacade.Categories.GetItems(query?.ToRepositoryQuery(), cancellationToken);
+		GetItemsQuery<Category>? query, CancellationToken cancellationToken)
+	{
+		logger.LogInformation("Getting categories. [Pagination: {@Pagination}]", query?.Pagination);
+		return repositoryFacade.Categories.GetItems(query?.ToRepositoryQuery(), cancellationToken);
+	}
 
 	public async Task<Category> AddCategory(AddCategoryData addCategoryData, CancellationToken cancellationToken)
 	{
+		logger.LogInformation("Adding category: {@CategoryData}", addCategoryData);
+
 		var (id, displayName) = addCategoryData;
 		var newCategory = new Category(id, displayName);
 		await repositoryFacade.Categories.Add(newCategory, cancellationToken);
@@ -36,11 +41,16 @@ public class PackageCatalogService : IPackageCatalogService
 	}
 
 	public Task<IReadOnlyCollection<Package>> GetPackages(
-		GetItemsQuery<Package>? query, CancellationToken cancellationToken) =>
-		repositoryFacade.Packages.GetItems(query?.ToRepositoryQuery(), cancellationToken);
+		GetItemsQuery<Package>? query, CancellationToken cancellationToken)
+	{
+		logger.LogInformation("Getting packages. [Pagination: {@Pagination}]", query?.Pagination);
+		return repositoryFacade.Packages.GetItems(query?.ToRepositoryQuery(), cancellationToken);
+	}
 
 	public async Task<Package> AddPackage(AddPackageData addPackageData, CancellationToken cancellationToken)
 	{
+		logger.LogInformation("Adding package: {@PackageData}", addPackageData);
+
 		var (packageId, displayName, categoryId) = addPackageData;
 		var categories = await GetCategories(
 			new GetItemsQuery<Category> { Filters = { x => x.Id.Equals(categoryId) } },
@@ -58,6 +68,10 @@ public class PackageCatalogService : IPackageCatalogService
 	public async Task<IReadOnlyCollection<PackageVersion>> GetPackageVersionsDesc(
 		StringId packageId, GetItemsQuery<PackageVersion>? query, CancellationToken cancellationToken)
 	{
+		logger.LogInformation(
+			"Getting package versions. [Package id: {PackageId}][Pagination: {@Pagination}]",
+			packageId, query?.Pagination);
+
 		await GetPackage(packageId, cancellationToken);
 
 		var filters = query?.Filters ?? new List<Expression<Func<PackageVersion, bool>>>();
@@ -79,6 +93,8 @@ public class PackageCatalogService : IPackageCatalogService
 	public async Task<PackageVersion> AddPackageVersion(
 		AddPackageVersionData addPackageVersionData, CancellationToken cancellationToken)
 	{
+		logger.LogInformation("Adding package version: {@PackageVersionData}", addPackageVersionData);
+
 		var (packageId, version, additionalData, content) = addPackageVersionData;
 		await packageStorage.StorePackageContent(
 			await GetPackageStoragePath(packageId, version, cancellationToken),
@@ -92,6 +108,10 @@ public class PackageCatalogService : IPackageCatalogService
 	public async Task<Stream> GetPackageVersionContent(StringId packageId, Version version,
 		CancellationToken cancellationToken)
 	{
+		logger.LogInformation(
+			"Getting package version content. [Package id: {PackageId}][Version: {Version}]",
+			packageId, version);
+
 		var packageVersion = (await repositoryFacade.PackageVersions.GetItems(
 				new GetRepositoryItemsQuery<PackageVersion> { Filters = GetPackageVersionFilter(packageId, version) },
 				cancellationToken))
