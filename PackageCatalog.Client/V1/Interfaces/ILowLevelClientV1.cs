@@ -32,4 +32,8 @@ public interface ILowLevelClientV1
 
 	[Get("/api/packages/{packageId}/versions/{version}/content")]
 	Task<Stream> GetPackageVersionContent(string packageId, Version version, CancellationToken cancellationToken);
+
+	[Multipart]
+	[Post("/api/upload")]
+	Task<UploadContentResponseV1> UploadContent(MultipartItem content, CancellationToken cancellationToken);
 }
