@@ -20,15 +20,23 @@ using PackageCatalog.Core.Extensions;
 using PackageCatalog.Core.Interfaces;
 using PackageCatalog.EfRepository.Extensions;
 using PackageCatalog.FileSystemStorage.Extensions;
+using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host
+	.UseSerilog((context, loggerConfiguration) =>
+		loggerConfiguration
+			.ReadFrom.Configuration(context.Configuration)
+			.Enrich.FromLogContext());
 
 builder.Services.AddProblemDetails(opt =>
 {
 	opt.ShouldLogUnhandledException = (_, exception, _) => exception switch
 	{
 		NotFoundPackageCatalogException => false,
+		ForbiddenPackageCatalogException => false,
 		_ => true,
 	};
 	opt.Map<NotFoundPackageCatalogException>((context, e) =>
