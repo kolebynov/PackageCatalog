@@ -23,6 +23,7 @@
       <ProjectReference Include="..\PackageCatalog.Contracts\PackageCatalog.Contracts.csproj" />
       <ProjectReference Include="..\PackageCatalog.EfRepository\PackageCatalog.EfRepository.csproj" />
       <ProjectReference Include="..\PackageCatalog.FileSystemStorage\PackageCatalog.FileSystemStorage.csproj" />
+      <ProjectReference Include="..\PackageCatalog.SftpStorage\PackageCatalog.SftpStorage.csproj" />
     </ItemGroup>
 
 </Project>

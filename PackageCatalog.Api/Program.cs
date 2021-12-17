@@ -20,7 +20,7 @@ using PackageCatalog.Core.Extensions;
 using PackageCatalog.Core.Interfaces;
 using PackageCatalog.Core.Objects;
 using PackageCatalog.EfRepository.Extensions;
-using PackageCatalog.FileSystemStorage.Extensions;
+using PackageCatalog.SftpStorage.Extensions;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -127,7 +127,7 @@ builder.Services.AddSwaggerGen(opt =>
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddCorePackageServices();
-builder.Services.AddFileSystemPackageStorage(opt => builder.Configuration.Bind("packageStorage", opt));
+builder.Services.AddSftpStorage(opt => builder.Configuration.Bind("sftpStorage", opt));
 builder.Services.AddEfPackageRepository(opt =>
 {
 	var connectionStringBuilder = new SqliteConnectionStringBuilder(builder.Configuration["connectionString"])

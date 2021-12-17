@@ -27,7 +27,8 @@ public static class ServiceCollectionExtensions
 				httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
 					"Bearer", settings.AccessToken);
 			})
-			.AddPolicyHandler(GetRetryPolicy());
+			.AddPolicyHandler(GetRetryPolicy())
+			.ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler());
 
 		services.Configure(settingsAction);
 

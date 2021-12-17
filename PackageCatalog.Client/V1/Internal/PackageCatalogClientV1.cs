@@ -44,7 +44,7 @@ internal class PackageCatalogClientV1 : IPackageCatalogClientV1
 		do
 		{
 			page = await pageProvider(
-				new PaginationV1 { Top = 1, SkipToken = page?.SkipToken });
+				new PaginationV1 { Top = 100, SkipToken = page?.SkipToken });
 			foreach (var categoryV1 in page.Data)
 			{
 				yield return categoryV1;
