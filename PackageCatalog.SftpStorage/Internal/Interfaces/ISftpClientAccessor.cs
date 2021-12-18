@@ -2,7 +2,7 @@
 
 namespace PackageCatalog.SftpStorage.Internal.Interfaces;
 
-internal interface ISftpClientEx : ISftpClient
+internal interface ISftpClientAccessor
 {
-	IDisposable Connect();
+	ISftpClient SftpClient { get; }
 }
