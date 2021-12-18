@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
 				httpClient.BaseAddress = settings.BaseUri;
 				httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
 					"Bearer", settings.AccessToken);
+				httpClient.Timeout = TimeSpan.FromMinutes(10);
 			})
 			.AddPolicyHandler(GetRetryPolicy())
 			.ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler());
