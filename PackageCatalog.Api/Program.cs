@@ -156,6 +156,8 @@ var app = builder.Build();
 
 app.UseProblemDetails();
 
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();

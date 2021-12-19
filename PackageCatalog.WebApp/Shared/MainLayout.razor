@@ -1,0 +1,28 @@
+@inherits LayoutComponentBase
+
+@inject NavigationManager navigationManager
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu/>
+    </div>
+
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code{
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (!TokenAuthenticationStatus.IsAuthenticated && !navigationManager.Uri.EndsWith("/authenticate", StringComparison.OrdinalIgnoreCase))
+        {
+            navigationManager.NavigateTo("authenticate");
+        }
+    }
+
+}

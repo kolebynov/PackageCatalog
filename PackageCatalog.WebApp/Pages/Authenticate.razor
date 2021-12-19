@@ -1,0 +1,51 @@
+﻿@page "/authenticate"
+@using PackageCatalog.WebApp.ViewModels
+@using PackageCatalog.Client.V1.Interfaces
+@using Microsoft.Extensions.Options
+@using PackageCatalog.Client.Configuration
+@using Refit
+
+@inject IServiceProvider serviceProvider
+@inject IOptions<ClientSettings> clientSettings
+@inject NavigationManager navigationManager
+
+<PageTitle>Authentication</PageTitle>
+
+<div>
+    <EditForm Model="viewModel" OnValidSubmit="TryAuthenticate">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+        <CustomValidation @ref="customValidation"/>
+        
+        <label>Access token:</label>
+        <InputText @bind-Value="viewModel.AccessToken"></InputText>
+        
+        <button type="submit" class="btn btn-primary">Authorize</button>
+    </EditForm>
+</div>
+
+@code {
+    private readonly AuthenticationViewModel viewModel = new();
+
+    private CustomValidation customValidation = null!;
+
+    private async Task TryAuthenticate()
+    {
+        clientSettings.Value.AccessToken = viewModel.AccessToken!;
+        var client = serviceProvider.GetRequiredService<IPackageCatalogClientV1>();
+
+        try
+        {
+            await client.GetCategories(CancellationToken.None).FirstAsync();
+            TokenAuthenticationStatus.IsAuthenticated = true;
+            navigationManager.NavigateTo("categories");
+;       }
+        catch (Exception e) when (e is HttpRequestException or ApiException)
+        {
+            customValidation.AddErrors(new Dictionary<string, IReadOnlyCollection<string>>
+            {
+                { nameof(AuthenticationViewModel.AccessToken), new[] { $"Authentication failed: {e.Message}" } },
+            });
+        }
+    }
+}

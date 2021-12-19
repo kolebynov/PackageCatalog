@@ -1,0 +1,86 @@
+﻿@page "/categories"
+@using PackageCatalog.Contracts.V1
+@using PackageCatalog.Client.V1.Interfaces
+@using PackageCatalog.WebApp.ViewModels
+@using Microsoft.AspNetCore.Components
+@using Refit
+
+@inject IPackageCatalogClientV1 packageCatalogClientV1
+
+<PageTitle>Categories</PageTitle>
+
+@if (categories == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <EditForm Model="addCategoryViewModel" OnValidSubmit="AddCategory">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+        <CustomValidation @ref="addCategoryErrors"/>
+        
+        <div>
+            <label>Id</label>
+            <InputText @bind-Value="addCategoryViewModel.Id"></InputText>
+        </div>
+        <div>
+            <label>Display name</label>
+            <InputText @bind-Value="addCategoryViewModel.DisplayName"></InputText>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Add category</button>
+    </EditForm>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Display name</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var category in categories)
+        {
+            <tr>
+                <td>@category.Id</td>
+                <td>@category.DisplayName</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyCollection<CategoryV1>? categories;
+    private AddCategoryViewModel addCategoryViewModel = new();
+    private CustomValidation addCategoryErrors = null!;
+
+    protected override Task OnInitializedAsync() => LoadCategories();
+
+    private async Task LoadCategories()
+    {
+        categories = await packageCatalogClientV1.GetCategories(CancellationToken.None).ToListAsync();
+    }
+
+    private async Task AddCategory()
+    {
+        try
+        {
+            await packageCatalogClientV1.AddCategory(
+                new AddCategoryRequestV1 { Id = addCategoryViewModel.Id, DisplayName = addCategoryViewModel.DisplayName },
+                CancellationToken.None);
+        }
+        catch (Exception e)
+        {
+            addCategoryErrors.AddErrors(new Dictionary<string, IReadOnlyCollection<string>>
+            {
+                { "Category", new[] { $"Failed to add category: {e.Message}" } },
+            });
+        }
+        
+        await LoadCategories();
+    }
+}

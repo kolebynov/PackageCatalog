@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Client", "Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.SftpStorage", "PackageCatalog.SftpStorage\PackageCatalog.SftpStorage.csproj", "{9186DE1C-7137-48F0-8C61-10EEEB039C42}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.WebApp", "PackageCatalog.WebApp\PackageCatalog.WebApp.csproj", "{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,5 +64,9 @@ Global
 		{9186DE1C-7137-48F0-8C61-10EEEB039C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9186DE1C-7137-48F0-8C61-10EEEB039C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9186DE1C-7137-48F0-8C61-10EEEB039C42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

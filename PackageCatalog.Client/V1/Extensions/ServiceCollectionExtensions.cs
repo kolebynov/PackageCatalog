@@ -13,13 +13,13 @@ namespace PackageCatalog.Client.V1.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-	public static IServiceCollection AddPackageCatalogClientV1(
+	public static IHttpClientBuilder AddPackageCatalogClientV1(
 		this IServiceCollection services, Action<ClientSettings> settingsAction)
 	{
 		_ = services ?? throw new ArgumentNullException(nameof(services));
 
 		services.AddSharedPackageServices();
-		services.AddRefitClient<ILowLevelClientV1>()
+		var httpBuilder = services.AddRefitClient<ILowLevelClientV1>()
 			.ConfigureHttpClient((sp, httpClient) =>
 			{
 				var settings = sp.GetRequiredService<IOptions<ClientSettings>>().Value;
@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
 
 		services.AddTransient<IPackageCatalogClientV1, PackageCatalogClientV1>();
 
-		return services;
+		return httpBuilder;
 	}
 
 	private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
