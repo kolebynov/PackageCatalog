@@ -42,5 +42,5 @@ public static class ServiceCollectionExtensions
 		Policy<HttpResponseMessage>
 			.Handle<HttpRequestException>()
 			.OrResult(r => r.StatusCode is > HttpStatusCode.NotImplemented or HttpStatusCode.RequestTimeout)
-			.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+			.WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 }

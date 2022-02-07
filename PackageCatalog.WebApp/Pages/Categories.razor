@@ -3,7 +3,6 @@
 @using PackageCatalog.Client.V1.Interfaces
 @using PackageCatalog.WebApp.ViewModels
 @using Microsoft.AspNetCore.Components
-@using Refit
 
 @inject IPackageCatalogClientV1 packageCatalogClientV1
 
@@ -17,18 +16,20 @@
 }
 else
 {
-    <EditForm Model="addCategoryViewModel" OnValidSubmit="AddCategory">
+    <EditForm Model="addCategoryViewModel" OnValidSubmit="AddCategory" style="max-width: 480px; margin-bottom: 10px">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
         <CustomValidation @ref="addCategoryErrors"/>
-        
-        <div>
-            <label>Id</label>
-            <InputText @bind-Value="addCategoryViewModel.Id"></InputText>
-        </div>
-        <div>
-            <label>Display name</label>
-            <InputText @bind-Value="addCategoryViewModel.DisplayName"></InputText>
+
+        <div class="container" style="margin-bottom: 5px">
+            <div class="row" style="margin-bottom: 5px">
+                <div class="col-4">Id</div>
+                <InputText @bind-Value="addCategoryViewModel.Id" class="col"></InputText>
+            </div>
+            <div class="row">
+                <div class="col-4">Display name</div>
+                <InputText @bind-Value="addCategoryViewModel.DisplayName" class="col"></InputText>
+            </div>
         </div>
         
         <button type="submit" class="btn btn-primary">Add category</button>

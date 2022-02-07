@@ -1,30 +1,35 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32002.185
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{39D62B75-4C68-450D-8B07-16FB2BAFC40F}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
-		PackageCatalog.ruleset = PackageCatalog.ruleset
 		editorconfig = editorconfig
+		PackageCatalog.ruleset = PackageCatalog.ruleset
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Api", "PackageCatalog.Api\PackageCatalog.Api.csproj", "{122E92ED-2131-4266-8E71-E19A788651DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.Api", "PackageCatalog.Api\PackageCatalog.Api.csproj", "{122E92ED-2131-4266-8E71-E19A788651DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Core", "PackageCatalog.Core\PackageCatalog.Core.csproj", "{C10FA05E-EA38-4B3B-BD7D-516DCF71FE8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.Core", "PackageCatalog.Core\PackageCatalog.Core.csproj", "{C10FA05E-EA38-4B3B-BD7D-516DCF71FE8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.FileSystemStorage", "PackageCatalog.FileSystemStorage\PackageCatalog.FileSystemStorage.csproj", "{89E2B0EB-A840-4D00-9BE0-BD101843839A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.FileSystemStorage", "PackageCatalog.FileSystemStorage\PackageCatalog.FileSystemStorage.csproj", "{89E2B0EB-A840-4D00-9BE0-BD101843839A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.EfRepository", "PackageCatalog.EfRepository\PackageCatalog.EfRepository.csproj", "{ABD17C5C-E0E8-46C4-9E4F-A9D01C5E0914}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.EfRepository", "PackageCatalog.EfRepository\PackageCatalog.EfRepository.csproj", "{ABD17C5C-E0E8-46C4-9E4F-A9D01C5E0914}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Shared", "PackageCatalog.Shared\PackageCatalog.Shared.csproj", "{513E6340-8DBE-4F3E-B57F-77AC65CFA9C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.Shared", "PackageCatalog.Shared\PackageCatalog.Shared.csproj", "{513E6340-8DBE-4F3E-B57F-77AC65CFA9C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Contracts", "PackageCatalog.Contracts\PackageCatalog.Contracts.csproj", "{55375511-3EBD-42FB-A7F1-4C28071C5C50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.Contracts", "PackageCatalog.Contracts\PackageCatalog.Contracts.csproj", "{55375511-3EBD-42FB-A7F1-4C28071C5C50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.Client", "PackageCatalog.Client\PackageCatalog.Client.csproj", "{CAC7DA24-58A3-420C-9074-94BC4D151847}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.Client", "PackageCatalog.Client\PackageCatalog.Client.csproj", "{CAC7DA24-58A3-420C-9074-94BC4D151847}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.SftpStorage", "PackageCatalog.SftpStorage\PackageCatalog.SftpStorage.csproj", "{9186DE1C-7137-48F0-8C61-10EEEB039C42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.TestClient", "PackageCatalog.TestClient\PackageCatalog.TestClient.csproj", "{5CD59227-2D9B-4896-AC60-2770910D8FC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageCatalog.WebApp", "PackageCatalog.WebApp\PackageCatalog.WebApp.csproj", "{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.SftpStorage", "PackageCatalog.SftpStorage\PackageCatalog.SftpStorage.csproj", "{9186DE1C-7137-48F0-8C61-10EEEB039C42}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PackageCatalog.WebApp", "PackageCatalog.WebApp\PackageCatalog.WebApp.csproj", "{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +65,10 @@ Global
 		{CAC7DA24-58A3-420C-9074-94BC4D151847}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAC7DA24-58A3-420C-9074-94BC4D151847}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAC7DA24-58A3-420C-9074-94BC4D151847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CD59227-2D9B-4896-AC60-2770910D8FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CD59227-2D9B-4896-AC60-2770910D8FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CD59227-2D9B-4896-AC60-2770910D8FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CD59227-2D9B-4896-AC60-2770910D8FC0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9186DE1C-7137-48F0-8C61-10EEEB039C42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9186DE1C-7137-48F0-8C61-10EEEB039C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9186DE1C-7137-48F0-8C61-10EEEB039C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -68,5 +77,11 @@ Global
 		{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98AE5644-69F8-46D5-99F2-F8D49F2B75DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2FC65DAA-9729-4680-8B40-A94E91B48381}
 	EndGlobalSection
 EndGlobal
