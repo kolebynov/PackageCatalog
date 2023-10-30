@@ -34,6 +34,7 @@
     <Rule Id="CA1724" Action="None" />
     <Rule Id="CA1812" Action="None" />
 	<Rule Id="CA1848" Action="None" Description="For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogInformation(ILogger, string, params object[])'" />
+    <Rule Id="CA1852" Action="None" />
     <Rule Id="CA2007" Action="None" Description="Do not directly await a Task without calling ConfigureAwait." />
     <Rule Id="CA2234" Action="None" />
     <Rule Id="CA2237" Action="None" Description="Mark ISerializable types with SerializableAttribute" />

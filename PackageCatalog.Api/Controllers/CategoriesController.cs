@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PackageCatalog.Api.Extensions;
 using PackageCatalog.Api.Interfaces;
@@ -12,7 +13,7 @@ namespace PackageCatalog.Api.Controllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "test", Policy = "123")]
 public class CategoriesController : ControllerBase
 {
 	private readonly IPackageCatalogService packageCatalogService;

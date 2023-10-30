@@ -4,7 +4,7 @@ using PackageCatalog.Shared.Interfaces;
 
 namespace PackageCatalog.Shared.Internal;
 
-internal class FileSystemAdapter : IFileSystemAdapter
+internal sealed class FileSystemAdapter : IFileSystemAdapter
 {
 	private readonly ILogger<FileSystemAdapter> logger;
 

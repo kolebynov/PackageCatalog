@@ -6,7 +6,7 @@ using Refit;
 
 namespace PackageCatalog.Client.V1.Internal;
 
-internal class PackageCatalogClientV1 : IPackageCatalogClientV1
+internal sealed class PackageCatalogClientV1 : IPackageCatalogClientV1
 {
 	private readonly ILowLevelClientV1 lowLevelClientV1;
 

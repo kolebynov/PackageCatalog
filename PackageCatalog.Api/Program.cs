@@ -1,8 +1,7 @@
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -76,15 +75,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			ValidateIssuerSigningKey = true,
 		};
 	});
-builder.Services.AddAuthorization();
-builder.Services.AddApiVersioning(opt =>
-{
-	opt.ReportApiVersions = true;
-	opt.ApiVersionReader = new QueryStringApiVersionReader(Constants.ApiVersionParameterName);
-	opt.DefaultApiVersion = new ApiVersion(1, 0);
-	opt.AssumeDefaultVersionWhenUnspecified = true;
-});
-builder.Services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
+builder.Services.AddAuthorization(opt => opt.AddPolicy("123", b => b.RequireRole("test2").Build()));
+builder.Services
+	.AddApiVersioning(opt =>
+	{
+		opt.ReportApiVersions = true;
+		opt.ApiVersionReader = new QueryStringApiVersionReader(Constants.ApiVersionParameterName);
+		opt.DefaultApiVersion = new ApiVersion(1, 0);
+		opt.AssumeDefaultVersionWhenUnspecified = true;
+	})
+	.AddApiExplorer(options => options.GroupNameFormat = "'v'VVV");
 builder.Services.AddOptions<SwaggerGenOptions>()
 	.Configure((SwaggerGenOptions opt, IApiVersionDescriptionProvider provider) =>
 	{
@@ -175,6 +175,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.Use(async (context, next) =>
+{
+	try
+	{
+		await next();
+	}
+	catch (Exception e)
+	{
+		Console.WriteLine(e);
+		throw;
+	}
+});
 app.UseAuthentication();
 app.UseAuthorization();
 

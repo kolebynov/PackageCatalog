@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using PackageCatalog.Api.Interfaces;
 using PackageCatalog.Api.Objects;
 using PackageCatalog.Contracts.V1;
