@@ -55,7 +55,7 @@ public class PackageCatalogService : IPackageCatalogService
 		var categories = await GetCategories(
 			new GetItemsQuery<Category> { Filters = { x => x.Id.Equals(categoryId) } },
 			cancellationToken);
-		if (!categories.Any())
+		if (categories.Count == 0)
 		{
 			throw NotFoundPackageCatalogException.CreateCategoryNotFound(categoryId);
 		}

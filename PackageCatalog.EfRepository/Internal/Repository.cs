@@ -49,12 +49,12 @@ internal class Repository<T> : IRepository<T> where T : class
 			return queryable;
 		}
 
-		if (getItemsQuery.Filters?.Any() == true)
+		if (getItemsQuery.Filters?.Count > 0)
 		{
 			queryable = getItemsQuery.Filters.Aggregate(queryable, (current, filter) => current.Where(filter));
 		}
 
-		if (getItemsQuery.Orderings?.Any() == true)
+		if (getItemsQuery.Orderings?.Count > 0)
 		{
 			var orderedQueryable = Order(queryable, getItemsQuery.Orderings.First());
 			queryable = getItemsQuery.Orderings.Skip(1).Aggregate(orderedQueryable, Order);
@@ -74,7 +74,7 @@ internal class Repository<T> : IRepository<T> where T : class
 		{
 			OrderDirection.Ascending => queryable.OrderBy(ordering.KeySelector),
 			OrderDirection.Descending => queryable.OrderByDescending(ordering.KeySelector),
-			_ => throw new ArgumentOutOfRangeException(nameof(ordering.Direction), "Invalid order direction"),
+			_ => throw new ArgumentOutOfRangeException(nameof(ordering), "Invalid order direction"),
 		};
 	}
 
@@ -85,7 +85,7 @@ internal class Repository<T> : IRepository<T> where T : class
 		{
 			OrderDirection.Ascending => queryable.ThenBy(ordering.KeySelector),
 			OrderDirection.Descending => queryable.ThenByDescending(ordering.KeySelector),
-			_ => throw new ArgumentOutOfRangeException(nameof(ordering.Direction), "Invalid order direction"),
+			_ => throw new ArgumentOutOfRangeException(nameof(ordering), "Invalid order direction"),
 		};
 	}
 

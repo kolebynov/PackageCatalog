@@ -75,7 +75,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			ValidateIssuerSigningKey = true,
 		};
 	});
-builder.Services.AddAuthorization(opt => opt.AddPolicy("123", b => b.RequireRole("test2").Build()));
+builder.Services.AddAuthorization();
 builder.Services
 	.AddApiVersioning(opt =>
 	{
@@ -105,9 +105,11 @@ builder.Services.AddSwaggerGen(opt =>
 	opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 	{
 		In = ParameterLocation.Header,
-		Description = "Please insert JWT with Bearer into field",
+		Description = "Please insert JWT into field",
 		Name = "Authorization",
-		Type = SecuritySchemeType.ApiKey,
+		Type = SecuritySchemeType.Http,
+		Scheme = "Bearer",
+		BearerFormat = "JWT",
 	});
 	opt.AddSecurityRequirement(new OpenApiSecurityRequirement
 	{
@@ -175,18 +177,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.Use(async (context, next) =>
-{
-	try
-	{
-		await next();
-	}
-	catch (Exception e)
-	{
-		Console.WriteLine(e);
-		throw;
-	}
-});
 app.UseAuthentication();
 app.UseAuthorization();
 

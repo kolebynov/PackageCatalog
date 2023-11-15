@@ -245,3 +245,4 @@ _Pvt_Extensions
 /src/IndexingManager/db/**
 /src/IndexingManager/logs/**
 /src/IndexingManager/updates/**
+/PackageCatalog.Api/db

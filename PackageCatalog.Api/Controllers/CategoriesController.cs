@@ -13,7 +13,7 @@ namespace PackageCatalog.Api.Controllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
-[Authorize(Roles = "test", Policy = "123")]
+[Authorize]
 public class CategoriesController : ControllerBase
 {
 	private readonly IPackageCatalogService packageCatalogService;
@@ -59,7 +59,7 @@ public class CategoriesController : ControllerBase
 		var categories = await packageCatalogService.GetCategories(
 			new GetItemsQuery<Category> { Filters = { x => x.Id.Equals(new StringId(categoryId)) } },
 			cancellationToken);
-		if (!categories.Any())
+		if (categories.Count == 0)
 		{
 			return Problem($"Category \"{categoryId}\" not found", statusCode: StatusCodes.Status404NotFound);
 		}
